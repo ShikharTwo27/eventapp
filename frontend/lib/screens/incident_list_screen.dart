@@ -17,11 +17,12 @@ class IncidentListScreen extends StatefulWidget {
 }
 
 class _IncidentListScreenState
-    extends State<IncidentListScreen> {
+extends State<IncidentListScreen> {
 
   List incidents = [];
 
   bool isLoading = true;
+
 
 
   @override
@@ -34,7 +35,8 @@ class _IncidentListScreenState
 
 
 
-  Future<void> fetchIncidents() async {
+  Future<void> fetchIncidents()
+  async {
 
     try {
 
@@ -44,6 +46,7 @@ class _IncidentListScreenState
       setState(() {
 
         incidents = data;
+
         isLoading = false;
       });
 
@@ -61,16 +64,16 @@ class _IncidentListScreenState
     switch (priority) {
 
       case "Critical":
-        return Colors.red;
+        return const Color(0xFFE57373);
 
       case "High":
-        return Colors.orange;
+        return const Color(0xFFFFB74D);
 
       case "Medium":
-        return Colors.amber;
+        return const Color(0xFFFFD54F);
 
       default:
-        return Colors.green;
+        return const Color(0xFF81C784);
     }
   }
 
@@ -81,16 +84,35 @@ class _IncidentListScreenState
 
     return Scaffold(
 
+      backgroundColor:
+      const Color(0xFFF4FAF9),
+
       appBar: AppBar(
 
+        backgroundColor:
+        const Color(0xFF4DB6AC),
+
+        toolbarHeight: 65,
+
         title: const Text(
-            "Emergency Incidents"),
+
+          "Emergency Incidents",
+
+          style: TextStyle(
+
+            fontSize: 20,
+
+            fontWeight:
+            FontWeight.w600,
+          ),
+        ),
 
         actions: [
 
           IconButton(
 
-            icon: const Icon(Icons.search),
+            icon:
+            const Icon(Icons.search),
 
             onPressed: () {
 
@@ -109,8 +131,8 @@ class _IncidentListScreenState
 
           IconButton(
 
-            icon: const Icon(
-                Icons.dashboard),
+            icon:
+            const Icon(Icons.grid_view_rounded),
 
             onPressed: () {
 
@@ -134,9 +156,15 @@ class _IncidentListScreenState
       floatingActionButton:
       FloatingActionButton(
 
-        backgroundColor: Colors.red,
+        backgroundColor:
+        const Color(0xFF4DB6AC),
 
-        child: const Icon(Icons.add),
+        elevation: 2,
+
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
 
         onPressed: () async {
 
@@ -167,17 +195,20 @@ class _IncidentListScreenState
           child:
           CircularProgressIndicator())
 
-          : incidents.isEmpty
-
-          ? const Center(
-          child:
-          Text("No Incidents Found"))
-
           : ListView.builder(
 
-        itemCount: incidents.length,
+        padding:
+        const EdgeInsets.symmetric(
 
-        itemBuilder: (context, index) {
+          horizontal: 14,
+          vertical: 12,
+        ),
+
+        itemCount:
+        incidents.length,
+
+        itemBuilder:
+            (context, index) {
 
           final incident =
           incidents[index];
@@ -206,28 +237,49 @@ class _IncidentListScreenState
               }
             },
 
-            child: Card(
-
-              elevation: 5,
+            child: Container(
 
               margin:
+              const EdgeInsets.only(
+                  bottom: 12),
+
+              padding:
               const EdgeInsets.all(10),
 
-              shape:
-              RoundedRectangleBorder(
+              decoration: BoxDecoration(
+
+                color: Colors.white,
 
                 borderRadius:
-                BorderRadius.circular(15),
+                BorderRadius.circular(18),
+
+                boxShadow: [
+
+                  BoxShadow(
+
+                    color:
+                    Colors.black.withOpacity(0.04),
+
+                    blurRadius: 6,
+
+                    offset:
+                    const Offset(0, 2),
+                  ),
+                ],
               ),
 
               child: ListTile(
 
                 contentPadding:
-                const EdgeInsets.all(12),
+                const EdgeInsets.symmetric(
+
+                  horizontal: 8,
+                  vertical: 4,
+                ),
 
                 leading: CircleAvatar(
 
-                  radius: 28,
+                  radius: 26,
 
                   backgroundColor:
                   getPriorityColor(
@@ -239,12 +291,11 @@ class _IncidentListScreenState
 
                     style: const TextStyle(
 
-                      color: Colors.white,
+                      color:
+                      Colors.white,
 
                       fontWeight:
-                      FontWeight.bold,
-
-                      fontSize: 20,
+                      FontWeight.w600,
                     ),
                   ),
                 ),
@@ -255,31 +306,53 @@ class _IncidentListScreenState
 
                   style: const TextStyle(
 
-                    fontWeight:
-                    FontWeight.bold,
+                    fontSize: 17,
 
-                    fontSize: 18,
+                    fontWeight:
+                    FontWeight.w600,
                   ),
                 ),
 
-                subtitle: Column(
+                subtitle: Padding(
 
-                  crossAxisAlignment:
-                  CrossAxisAlignment.start,
+                  padding:
+                  const EdgeInsets.only(
+                      top: 6),
 
-                  children: [
+                  child: Column(
 
-                    const SizedBox(height: 5),
+                    crossAxisAlignment:
+                    CrossAxisAlignment.start,
 
-                    Text(
-                        incident["category"]),
+                    children: [
 
-                    const SizedBox(height: 5),
+                      Text(
 
-                    Text(
-                      "Status: ${incident["status"]}",
-                    ),
-                  ],
+                        incident["category"],
+
+                        style: TextStyle(
+
+                          color:
+                          Colors.grey.shade700,
+                        ),
+                      ),
+
+                      const SizedBox(height: 3),
+
+                      Text(
+
+                        "Status: ${incident["status"]}",
+
+                        style: TextStyle(
+
+                          color:
+                          Colors.grey.shade600,
+
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
 
                 trailing: Text(
@@ -288,13 +361,14 @@ class _IncidentListScreenState
 
                   style: TextStyle(
 
-                    color: getPriorityColor(
+                    color:
+                    getPriorityColor(
                         incident["priority"]),
 
                     fontWeight:
-                    FontWeight.bold,
+                    FontWeight.w600,
 
-                    fontSize: 16,
+                    fontSize: 15,
                   ),
                 ),
               ),

@@ -18,6 +18,9 @@ extends StatefulWidget {
 class _ReportIncidentScreenState
 extends State<ReportIncidentScreen> {
 
+  final formKey =
+  GlobalKey<FormState>();
+
   final titleController =
   TextEditingController();
 
@@ -27,13 +30,9 @@ extends State<ReportIncidentScreen> {
   final locationController =
   TextEditingController();
 
+  String category = "Medical";
 
-  String selectedCategory =
-      "Medical";
-
-  String selectedPriority =
-      "Low";
-
+  String priority = "Low";
 
   bool isLoading = false;
 
@@ -42,41 +41,20 @@ extends State<ReportIncidentScreen> {
   Future<void> submitIncident()
   async {
 
-    if (
-    titleController.text.isEmpty ||
-
-        descriptionController
-            .text
-            .isEmpty ||
-
-        locationController
-            .text
-            .isEmpty
-    ) {
-
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-
-        const SnackBar(
-
-          content: Text(
-              "Please fill all fields"),
-        ),
-      );
+    if (!formKey.currentState!
+        .validate()) {
 
       return;
     }
-
 
     setState(() {
 
       isLoading = true;
     });
 
-
     try {
 
-      String result =
+      final response =
       await ApiService
           .createIncident(
 
@@ -87,38 +65,35 @@ extends State<ReportIncidentScreen> {
         descriptionController.text,
 
         category:
-        selectedCategory,
+        category,
 
         priority:
-        selectedPriority,
+        priority,
 
         location:
         locationController.text,
       );
 
+      if (response == true) {
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
+        ScaffoldMessenger.of(context)
+            .showSnackBar(
 
-        SnackBar(
-          content: Text(result),
-        ),
-      );
+          const SnackBar(
 
-      Navigator.pop(context, true);
+            content:
+            Text(
+                "Incident Reported"),
+          ),
+        );
+
+        Navigator.pop(context, true);
+      }
 
     } catch (e) {
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-
-        SnackBar(
-          content: Text(
-              e.toString()),
-        ),
-      );
+      print(e);
     }
-
 
     setState(() {
 
@@ -128,186 +103,351 @@ extends State<ReportIncidentScreen> {
 
 
 
+  Widget buildLabel(String text) {
+
+    return Padding(
+
+      padding:
+      const EdgeInsets.only(
+
+        bottom: 8,
+      ),
+
+      child: Text(
+
+        text,
+
+        style: TextStyle(
+
+          fontSize: 15,
+
+          fontWeight:
+          FontWeight.w500,
+
+          color:
+          Colors.grey.shade800,
+        ),
+      ),
+    );
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
 
+      backgroundColor:
+      const Color(0xFFF4FAF9),
+
       appBar: AppBar(
+
+        backgroundColor:
+        const Color(0xFF4DB6AC),
 
         title:
         const Text(
             "Report Incident"),
       ),
 
-      body: Padding(
+      body: SingleChildScrollView(
 
         padding:
         const EdgeInsets.all(16),
 
-        child:
-        SingleChildScrollView(
+        child: Form(
+
+          key: formKey,
 
           child: Column(
 
+            crossAxisAlignment:
+            CrossAxisAlignment.start,
+
             children: [
 
-              TextField(
-
-                controller:
-                titleController,
-
-                decoration:
-                const InputDecoration(
-
-                  labelText:
-                  "Incident Title",
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              TextField(
-
-                controller:
-                descriptionController,
-
-                maxLines: 4,
-
-                decoration:
-                const InputDecoration(
-
-                  labelText:
-                  "Description",
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              DropdownButtonFormField(
-
-                value:
-                selectedCategory,
-
-                items: [
-
-                  "Medical",
-                  "Fire",
-                  "Security",
-                  "Accident"
-
-                ].map((category) {
-
-                  return DropdownMenuItem(
-
-                    value: category,
-
-                    child:
-                    Text(category),
-                  );
-
-                }).toList(),
-
-                onChanged: (value) {
-
-                  setState(() {
-
-                    selectedCategory =
-                    value!;
-                  });
-                },
-
-                decoration:
-                const InputDecoration(
-
-                  labelText:
-                  "Category",
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              DropdownButtonFormField(
-
-                value:
-                selectedPriority,
-
-                items: [
-
-                  "Low",
-                  "Medium",
-                  "High",
-                  "Critical"
-
-                ].map((priority) {
-
-                  return DropdownMenuItem(
-
-                    value: priority,
-
-                    child:
-                    Text(priority),
-                  );
-
-                }).toList(),
-
-                onChanged: (value) {
-
-                  setState(() {
-
-                    selectedPriority =
-                    value!;
-                  });
-                },
-
-                decoration:
-                const InputDecoration(
-
-                  labelText:
-                  "Priority",
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              TextField(
-
-                controller:
-                locationController,
-
-                decoration:
-                const InputDecoration(
-
-                  labelText:
-                  "Location",
-                ),
-              ),
-
-              const SizedBox(height: 30),
-
-              SizedBox(
+              Container(
 
                 width:
                 double.infinity,
 
-                height: 50,
+                padding:
+                const EdgeInsets.all(20),
 
-                child: ElevatedButton(
+                decoration: BoxDecoration(
 
-                  onPressed:
-                  isLoading
-                      ? null
-                      : submitIncident,
+                  color: Colors.white,
 
-                  child: isLoading
+                  borderRadius:
+                  BorderRadius.circular(20),
 
-                      ? const CircularProgressIndicator(
-                    color:
-                    Colors.white,
-                  )
+                  boxShadow: [
 
-                      : const Text(
-                          "Submit Incident"),
+                    BoxShadow(
+
+                      color:
+                      Colors.black
+                          .withOpacity(0.04),
+
+                      blurRadius: 6,
+
+                      offset:
+                      const Offset(0, 2),
+                    ),
+                  ],
+                ),
+
+                child: Column(
+
+                  crossAxisAlignment:
+                  CrossAxisAlignment.start,
+
+                  children: [
+
+                    const Text(
+
+                      "Incident Information",
+
+                      style: TextStyle(
+
+                        fontSize: 20,
+
+                        fontWeight:
+                        FontWeight.w600,
+                      ),
+                    ),
+
+                    const SizedBox(height: 22),
+
+
+
+                    buildLabel(
+                        "Incident Title"),
+
+                    TextFormField(
+
+                      controller:
+                      titleController,
+
+                      validator: (value) {
+
+                        if (value == null ||
+                            value.isEmpty) {
+
+                          return
+                          "Enter incident title";
+                        }
+
+                        return null;
+                      },
+
+                      decoration:
+                      const InputDecoration(
+
+                        hintText:
+                        "Enter title",
+                      ),
+                    ),
+
+                    const SizedBox(height: 18),
+
+
+
+                    buildLabel(
+                        "Description"),
+
+                    TextFormField(
+
+                      controller:
+                      descriptionController,
+
+                      maxLines: 4,
+
+                      validator: (value) {
+
+                        if (value == null ||
+                            value.isEmpty) {
+
+                          return
+                          "Enter description";
+                        }
+
+                        return null;
+                      },
+
+                      decoration:
+                      const InputDecoration(
+
+                        hintText:
+                        "Describe incident",
+                      ),
+                    ),
+
+                    const SizedBox(height: 18),
+
+
+
+                    buildLabel(
+                        "Location"),
+
+                    TextFormField(
+
+                      controller:
+                      locationController,
+
+                      validator: (value) {
+
+                        if (value == null ||
+                            value.isEmpty) {
+
+                          return
+                          "Enter location";
+                        }
+
+                        return null;
+                      },
+
+                      decoration:
+                      const InputDecoration(
+
+                        hintText:
+                        "Enter location",
+                      ),
+                    ),
+
+                    const SizedBox(height: 18),
+
+
+
+                    buildLabel(
+                        "Category"),
+
+                    DropdownButtonFormField(
+
+                      value: category,
+
+                      decoration:
+                      const InputDecoration(),
+
+                      items: [
+
+                        "Medical",
+                        "Fire",
+                        "Crime",
+                        "Accident"
+
+                      ].map((item) {
+
+                        return DropdownMenuItem(
+
+                          value: item,
+
+                          child: Text(item),
+                        );
+
+                      }).toList(),
+
+                      onChanged: (value) {
+
+                        setState(() {
+
+                          category =
+                          value!;
+                        });
+                      },
+                    ),
+
+                    const SizedBox(height: 18),
+
+
+
+                    buildLabel(
+                        "Priority"),
+
+                    DropdownButtonFormField(
+
+                      value: priority,
+
+                      decoration:
+                      const InputDecoration(),
+
+                      items: [
+
+                        "Low",
+                        "Medium",
+                        "High",
+                        "Critical"
+
+                      ].map((item) {
+
+                        return DropdownMenuItem(
+
+                          value: item,
+
+                          child: Text(item),
+                        );
+
+                      }).toList(),
+
+                      onChanged: (value) {
+
+                        setState(() {
+
+                          priority =
+                          value!;
+                        });
+                      },
+                    ),
+
+                    const SizedBox(height: 28),
+
+
+
+                    SizedBox(
+
+                      width:
+                      double.infinity,
+
+                      height: 54,
+
+                      child: ElevatedButton(
+
+                        onPressed:
+                        isLoading
+
+                            ? null
+
+                            : submitIncident,
+
+                        child: isLoading
+
+                            ? const SizedBox(
+
+                          height: 22,
+                          width: 22,
+
+                          child:
+                          CircularProgressIndicator(
+
+                            color:
+                            Colors.white,
+
+                            strokeWidth: 2,
+                          ),
+                        )
+
+                            : const Text(
+
+                          "Submit Report",
+
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

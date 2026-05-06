@@ -1,147 +1,143 @@
 const express = require("express");
+
 const router = express.Router();
 
-const Incident = require("../models/Incident");
+const {
+  createIncident,
+  getIncidents,
+  updateIncidentStatus,
+  deleteIncident,
+} = require("../services/incidentStore");
 
 
 
 // CREATE INCIDENT
-router.post("/create", async (req, res) => {
+router.post("/create",
+async (req, res) => {
 
-    try {
+  try {
+    const incident = await createIncident({
+      title: req.body.title,
+      description: req.body.description,
+      category: req.body.category,
+      priority: req.body.priority,
+      location: req.body.location,
+    });
 
-        const newIncident = new Incident({
+    res.status(201).json({
 
-            incidentId: "INC-" + Date.now(),
+      message:
+      "Incident Created",
 
-            title: req.body.title,
-            description: req.body.description,
-            category: req.body.category,
-            priority: req.body.priority,
-            location: req.body.location
-        });
+      incident,
+    });
 
-        const savedIncident =
-        await newIncident.save();
+  } catch (error) {
 
-        res.status(201).json(savedIncident);
+    res.status(500).json({
 
-    } catch (error) {
-
-        res.status(500).json({
-            message: error.message
-        });
-    }
+      message:
+      error.message,
+    });
+  }
 });
 
 
 
 // GET ALL INCIDENTS
-router.get("/", async (req, res) => {
+router.get("/",
+async (req, res) => {
 
-    try {
+  try {
 
-        const priorityOrder = {
+    const incidents = await getIncidents();
 
-            Critical: 4,
-            High: 3,
-            Medium: 2,
-            Low: 1
-        };
+    res.status(200).json(
+        incidents);
 
-        const incidents =
-        await Incident.find();
+  } catch (error) {
 
-        incidents.sort((a, b) => {
+    res.status(500).json({
 
-            if (
-                priorityOrder[b.priority] !==
-                priorityOrder[a.priority]
-            ) {
-
-                return (
-                    priorityOrder[b.priority] -
-                    priorityOrder[a.priority]
-                );
-            }
-
-            return (
-                new Date(a.createdAt) -
-                new Date(b.createdAt)
-            );
-        });
-
-        res.status(200).json(incidents);
-
-    } catch (error) {
-
-        res.status(500).json({
-            message: error.message
-        });
-    }
+      message:
+      error.message,
+    });
+  }
 });
 
 
 
-// UPDATE INCIDENT STATUS
+// UPDATE STATUS
 router.put(
-    "/update-status/:id",
-    async (req, res) => {
+"/update-status/:id",
 
-        try {
+async (req, res) => {
 
-            const updatedIncident =
-            await Incident.findByIdAndUpdate(
+  try {
 
-                req.params.id,
+    const updatedIncident = await updateIncidentStatus(
+      req.params.id,
+      req.body.status
+    );
 
-                {
-                    status: req.body.status
-                },
-
-                { new: true }
-            );
-
-            res.status(200).json(
-                updatedIncident
-            );
-
-        } catch (error) {
-
-            res.status(500).json({
-                message: error.message
-            });
-        }
+    if (!updatedIncident) {
+      return res.status(404).json({
+        message: "Incident not found",
+      });
     }
-);
+
+    res.status(200).json({
+
+      message:
+      "Status Updated",
+
+      updatedIncident,
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+
+      message:
+      error.message,
+    });
+  }
+});
 
 
 
 // DELETE INCIDENT
 router.delete(
-    "/delete/:id",
-    async (req, res) => {
+"/delete/:id",
 
-        try {
+async (req, res) => {
 
-            await Incident.findByIdAndDelete(
-                req.params.id
-            );
+  try {
 
-            res.status(200).json({
+    const deleted = await deleteIncident(req.params.id);
 
-                message:
-                "Incident Deleted Successfully"
-            });
-
-        } catch (error) {
-
-            res.status(500).json({
-                message: error.message
-            });
-        }
+    if (!deleted) {
+      return res.status(404).json({
+        message: "Incident not found",
+      });
     }
-);
+
+    res.status(200).json({
+
+      message:
+      "Incident Deleted",
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+
+      message:
+      error.message,
+    });
+  }
+});
+
 
 
 module.exports = router;

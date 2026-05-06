@@ -1,34 +1,107 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
-
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:http/http.dart'
+as http;
 
 import 'offline_service.dart';
 
 class ApiService {
 
   static const String baseUrl =
-      "http://localhost:5000/api/incidents";
+      "http://127.0.0.1:5000/api/incidents";
 
 
 
-  // CHECK INTERNET
+  // CREATE INCIDENT
   static Future<bool>
-  hasInternet() async {
+  createIncident({
 
-    final connectivityResult =
-    await Connectivity()
-        .checkConnectivity();
+    required String title,
 
-    return connectivityResult
-    != ConnectivityResult.none;
+    required String description,
+
+    required String category,
+
+    required String priority,
+
+    required String location,
+
+  }) async {
+
+    try {
+
+      final response =
+      await http.post(
+
+        Uri.parse(
+            "$baseUrl/create"),
+
+        headers: {
+
+          "Content-Type":
+          "application/json",
+        },
+
+        body: jsonEncode({
+
+          "title": title,
+
+          "description":
+          description,
+
+          "category":
+          category,
+
+          "priority":
+          priority,
+
+          "location":
+          location,
+        }),
+      );
+
+      print(response.statusCode);
+
+      print(response.body);
+
+      if (response.statusCode
+      == 201) {
+
+        return true;
+      }
+
+      return false;
+
+    } catch (e) {
+
+      print(e);
+
+      await OfflineService
+          .saveOfflineIncident({
+
+        "title": title,
+
+        "description":
+        description,
+
+        "category":
+        category,
+
+        "priority":
+        priority,
+
+        "location":
+        location,
+      });
+
+      return true;
+    }
   }
 
 
 
   // GET INCIDENTS
-  static Future<List<dynamic>>
+  static Future<List>
   getIncidents() async {
 
     final response =
@@ -36,89 +109,8 @@ class ApiService {
       Uri.parse(baseUrl),
     );
 
-    if (response.statusCode == 200) {
-
-      return jsonDecode(
-          response.body);
-
-    } else {
-
-      throw Exception(
-          "Failed to load incidents");
-    }
-  }
-
-
-
-  // CREATE INCIDENT
-  static Future<String>
-  createIncident({
-
-    required String title,
-    required String description,
-    required String category,
-    required String priority,
-    required String location,
-
-  }) async {
-
-    bool online =
-    await hasInternet();
-
-
-
-    // OFFLINE SAVE
-    if (!online) {
-
-      await OfflineService
-          .saveOfflineIncident({
-
-        "title": title,
-        "description":
-        description,
-        "category": category,
-        "priority": priority,
-        "location": location,
-      });
-
-      return "Saved Offline";
-    }
-
-
-
-    // ONLINE SAVE
-    final response =
-    await http.post(
-
-      Uri.parse(
-          "$baseUrl/create"),
-
-      headers: {
-
-        "Content-Type":
-        "application/json"
-      },
-
-      body: jsonEncode({
-
-        "title": title,
-        "description":
-        description,
-        "category": category,
-        "priority": priority,
-        "location": location,
-      }),
-    );
-
-    if (response.statusCode == 201) {
-
-      return "Saved Online";
-
-    } else {
-
-      throw Exception(
-          "Failed to create incident");
-    }
+    return jsonDecode(
+        response.body);
   }
 
 
@@ -128,11 +120,11 @@ class ApiService {
   updateIncidentStatus({
 
     required String id,
+
     required String status,
 
   }) async {
 
-    final response =
     await http.put(
 
       Uri.parse(
@@ -141,40 +133,28 @@ class ApiService {
       headers: {
 
         "Content-Type":
-        "application/json"
+        "application/json",
       },
 
       body: jsonEncode({
 
-        "status": status
+        "status": status,
       }),
     );
-
-    if (response.statusCode != 200) {
-
-      throw Exception(
-          "Failed to update status");
-    }
   }
 
 
 
   // DELETE INCIDENT
   static Future<void>
-  deleteIncident(String id) async {
+  deleteIncident(
+      String id) async {
 
-    final response =
     await http.delete(
 
       Uri.parse(
           "$baseUrl/delete/$id"),
     );
-
-    if (response.statusCode != 200) {
-
-      throw Exception(
-          "Failed to delete incident");
-    }
   }
 
 
@@ -189,29 +169,38 @@ class ApiService {
     int total =
     incidents.length;
 
-    int resolved = incidents
-        .where((incident) =>
-    incident["status"] ==
-        "Resolved")
-        .length;
+    int active =
+    incidents.where((i) {
 
-    int active = incidents
-        .where((incident) =>
-    incident["status"] !=
-        "Resolved")
-        .length;
+      return i["status"]
+      != "Resolved";
 
-    int critical = incidents
-        .where((incident) =>
-    incident["priority"] ==
-        "Critical")
-        .length;
+    }).length;
+
+    int resolved =
+    incidents.where((i) {
+
+      return i["status"]
+      == "Resolved";
+
+    }).length;
+
+    int critical =
+    incidents.where((i) {
+
+      return i["priority"]
+      == "Critical";
+
+    }).length;
 
     return {
 
       "total": total,
+
       "active": active,
+
       "resolved": resolved,
+
       "critical": critical,
     };
   }

@@ -1,0 +1,46 @@
+[
+  {
+    "_id": "1aa0ecee-168b-42f1-b9c3-fa64446a1748",
+    "title": "Medication Need ",
+    "description": "Student has cough and cold",
+    "category": "Medical",
+    "priority": "Medium",
+    "location": "Block C",
+    "status": "Reported",
+    "createdAt": "2026-05-06T11:32:29.853Z",
+    "updatedAt": "2026-05-06T11:32:29.853Z"
+  },
+  {
+    "_id": "e05ae2b9-b8b6-49eb-9d55-2f9afc5604d3",
+    "title": "Medication Need",
+    "description": "Student has slight fever",
+    "category": "Medical",
+    "priority": "Low",
+    "location": "Block A",
+    "status": "Reported",
+    "createdAt": "2026-05-06T11:30:50.331Z",
+    "updatedAt": "2026-05-06T11:30:50.331Z"
+  },
+  {
+    "_id": "eff9b081-49a6-4b6f-bc79-f548f4f08b88",
+    "title": "Medical Emergency ",
+    "description": "Student fainted",
+    "category": "Medical",
+    "priority": "High",
+    "location": "Block B",
+    "status": "Reported",
+    "createdAt": "2026-05-06T11:30:17.270Z",
+    "updatedAt": "2026-05-06T11:30:17.271Z"
+  },
+  {
+    "_id": "f92ede71-5b0b-48c3-a6c6-1e99f4461bd5",
+    "title": "Fire ",
+    "description": "Fire",
+    "category": "Fire",
+    "priority": "Critical",
+    "location": "Block A",
+    "status": "Resolved",
+    "createdAt": "2026-05-06T11:29:35.422Z",
+    "updatedAt": "2026-05-06T11:29:44.646Z"
+  }
+]

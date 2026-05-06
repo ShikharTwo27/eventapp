@@ -74,7 +74,6 @@ extends State<SearchFilterScreen> {
 
 
 
-    // SEARCH
     if (searchController
         .text
         .isNotEmpty) {
@@ -94,7 +93,6 @@ extends State<SearchFilterScreen> {
 
 
 
-    // PRIORITY FILTER
     if (selectedPriority
         != "All") {
 
@@ -122,16 +120,16 @@ extends State<SearchFilterScreen> {
     switch (priority) {
 
       case "Critical":
-        return Colors.red;
+        return const Color(0xFFE57373);
 
       case "High":
-        return Colors.orange;
+        return const Color(0xFFFFB74D);
 
       case "Medium":
-        return Colors.amber;
+        return const Color(0xFFFFD54F);
 
       default:
-        return Colors.green;
+        return const Color(0xFF81C784);
     }
   }
 
@@ -142,11 +140,28 @@ extends State<SearchFilterScreen> {
 
     return Scaffold(
 
+      backgroundColor:
+      const Color(0xFFF4FAF9),
+
       appBar: AppBar(
 
-        title:
-        const Text(
-            "Search & Filter"),
+        backgroundColor:
+        const Color(0xFF4DB6AC),
+
+        toolbarHeight: 65,
+
+        title: const Text(
+
+          "Search & Filter",
+
+          style: TextStyle(
+
+            fontSize: 20,
+
+            fontWeight:
+            FontWeight.w600,
+          ),
+        ),
       ),
 
       body: isLoading
@@ -158,7 +173,7 @@ extends State<SearchFilterScreen> {
           : Padding(
 
         padding:
-        const EdgeInsets.all(16),
+        const EdgeInsets.all(14),
 
         child: Column(
 
@@ -170,13 +185,36 @@ extends State<SearchFilterScreen> {
               searchController,
 
               decoration:
-              const InputDecoration(
+              InputDecoration(
 
                 hintText:
                 "Search incidents",
 
+                hintStyle:
+                TextStyle(
+
+                  color:
+                  Colors.grey.shade600,
+                ),
+
                 prefixIcon:
-                Icon(Icons.search),
+                const Icon(
+                    Icons.search),
+
+                filled: true,
+
+                fillColor:
+                Colors.white,
+
+                border:
+                OutlineInputBorder(
+
+                  borderRadius:
+                  BorderRadius.circular(16),
+
+                  borderSide:
+                  BorderSide.none,
+                ),
               ),
 
               onChanged: (value) {
@@ -185,7 +223,7 @@ extends State<SearchFilterScreen> {
               },
             ),
 
-            const SizedBox(height: 15),
+            const SizedBox(height: 14),
 
 
 
@@ -226,14 +264,29 @@ extends State<SearchFilterScreen> {
               },
 
               decoration:
-              const InputDecoration(
+              InputDecoration(
 
                 labelText:
                 "Priority Filter",
+
+                filled: true,
+
+                fillColor:
+                Colors.white,
+
+                border:
+                OutlineInputBorder(
+
+                  borderRadius:
+                  BorderRadius.circular(16),
+
+                  borderSide:
+                  BorderSide.none,
+                ),
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
 
 
@@ -245,7 +298,7 @@ extends State<SearchFilterScreen> {
                   ? const Center(
 
                 child: Text(
-                    "No Matching Incidents"),
+                    "No matching incidents"),
               )
 
                   : ListView.builder(
@@ -259,12 +312,53 @@ extends State<SearchFilterScreen> {
                   final incident =
                   filteredIncidents[index];
 
-                  return Card(
+                  return Container(
+
+                    margin:
+                    const EdgeInsets.only(
+                        bottom: 12),
+
+                    padding:
+                    const EdgeInsets.all(10),
+
+                    decoration:
+                    BoxDecoration(
+
+                      color:
+                      Colors.white,
+
+                      borderRadius:
+                      BorderRadius.circular(18),
+
+                      boxShadow: [
+
+                        BoxShadow(
+
+                          color:
+                          Colors.black
+                              .withOpacity(0.04),
+
+                          blurRadius: 6,
+
+                          offset:
+                          const Offset(0, 2),
+                        ),
+                      ],
+                    ),
 
                     child: ListTile(
 
+                      contentPadding:
+                      const EdgeInsets.symmetric(
+
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+
                       leading:
                       CircleAvatar(
+
+                        radius: 24,
 
                         backgroundColor:
                         getPriorityColor(
@@ -281,16 +375,43 @@ extends State<SearchFilterScreen> {
 
                             color:
                             Colors.white,
+
+                            fontWeight:
+                            FontWeight.w600,
                           ),
                         ),
                       ),
 
                       title: Text(
-                          incident["title"]),
 
-                      subtitle: Text(
+                        incident["title"],
 
-                          "${incident["category"]} • ${incident["status"]}"
+                        style:
+                        const TextStyle(
+
+                          fontWeight:
+                          FontWeight.w600,
+
+                          fontSize: 16,
+                        ),
+                      ),
+
+                      subtitle: Padding(
+
+                        padding:
+                        const EdgeInsets.only(
+                            top: 5),
+
+                        child: Text(
+
+                          "${incident["category"]} • ${incident["status"]}",
+
+                          style: TextStyle(
+
+                            color:
+                            Colors.grey.shade700,
+                          ),
+                        ),
                       ),
 
                       trailing: Text(
@@ -306,7 +427,7 @@ extends State<SearchFilterScreen> {
                           ),
 
                           fontWeight:
-                          FontWeight.bold,
+                          FontWeight.w600,
                         ),
                       ),
                     ),
