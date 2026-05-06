@@ -1,0 +1,17 @@
+# Flutter
+.dart_tool/
+.packages
+.pub/
+build/
+
+# Node
+node_modules/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
